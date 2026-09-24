@@ -1,0 +1,1383 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f2" />
+    <meta
+      name="description"
+      content="Ask Now, a focused AI workspace for thinking, making, and getting things done."
+    />
+    <title>Ask Now | AI workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #17201d;
+        --muted: #6c7770;
+        --line: #dfe5de;
+        --paper: #fbfcf8;
+        --canvas: #f1f4ee;
+        --mint: #baf3d0;
+        --green: #167b55;
+        --orange: #f0a35b;
+        --shadow: 0 18px 50px rgba(31, 55, 39, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--canvas);
+        min-height: 100dvh;
+        overflow-x: hidden;
+        font:
+          14px "DM Sans",
+          sans-serif;
+      }
+      button,
+      textarea,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      svg.icon {
+        width: 16px;
+        height: 16px;
+        display: block;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.8;
+      }
+      .brand-mark svg.icon {
+        width: 19px;
+        height: 19px;
+        stroke-width: 2;
+      }
+      .nav-icon svg.icon {
+        width: 17px;
+        height: 17px;
+      }
+      .new-chat svg.icon {
+        width: 15px;
+        height: 15px;
+      }
+      .icon-btn svg.icon {
+        width: 17px;
+        height: 17px;
+      }
+      .tool svg.icon {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        vertical-align: -3px;
+        margin-right: 4px;
+      }
+      .send svg.icon {
+        width: 17px;
+        height: 17px;
+        margin: auto;
+        stroke-width: 2.2;
+      }
+      .app {
+        display: block;
+        min-height: 100dvh;
+      }
+      .sidebar {
+        background: #edf1eb;
+        border-right: 1px solid var(--line);
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        width: 244px;
+        height: 100dvh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        overflow-y: auto;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 10px;
+      }
+      .brand-mark {
+        width: 35px;
+        height: 35px;
+        display: grid;
+        place-items: center;
+        border-radius: 11px;
+        background: var(--ink);
+        color: var(--mint);
+        font: 700 18px "Space Grotesk";
+      }
+      .brand strong {
+        font: 700 20px "Space Grotesk";
+        letter-spacing: -0.05em;
+      }
+      .new-chat {
+        border: 0;
+        background: var(--ink);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .nav {
+        display: grid;
+        gap: 5px;
+      }
+      .nav button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        text-align: left;
+        padding: 11px 12px;
+        border-radius: 9px;
+        display: flex;
+        gap: 11px;
+        align-items: center;
+      }
+      .nav button:hover,
+      .nav button.active {
+        background: #fff;
+        color: var(--ink);
+        box-shadow: 0 2px 8px rgba(23, 32, 29, 0.04);
+      }
+      .nav-icon {
+        width: 18px;
+        text-align: center;
+        font-size: 16px;
+      }
+      .chat-history {
+        display: grid;
+        gap: 8px;
+        min-height: 0;
+      }
+      .chat-history-heading {
+        padding: 0 12px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .chat-list {
+        display: grid;
+        gap: 3px;
+        max-height: min(35vh, 280px);
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+      .chat-list:empty::after {
+        content: "Your previous chats will appear here";
+        padding: 4px 12px;
+        color: #9aa39b;
+        font-size: 11px;
+        line-height: 1.4;
+      }
+      .chat-item {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 9px 12px;
+        overflow: hidden;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+      .chat-item:hover,
+      .chat-item.active {
+        background: #fff;
+        color: var(--ink);
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+      }
+      .profile {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 9px;
+      }
+      .avatar {
+        width: 31px;
+        height: 31px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--orange);
+        font-weight: 700;
+      }
+      .profile small {
+        display: block;
+        color: var(--muted);
+        margin-top: 2px;
+        font-size: 11px;
+      }
+      .content {
+        min-width: 0;
+        min-height: 100dvh;
+        margin-left: 244px;
+        display: flex;
+        flex-direction: column;
+      }
+      .topbar {
+        height: 72px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(18px, 4vw, 56px);
+        background: rgba(251, 252, 248, 0.75);
+      }
+      .crumb {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .crumb b {
+        color: var(--ink);
+      }
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+      }
+      .online {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 700;
+        padding-left: 12px;
+        border-left: 1px solid var(--line);
+      }
+      .online i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+      .workspace {
+        width: min(1020px, 100%);
+        margin: auto;
+        padding: clamp(25px, 5vw, 62px) clamp(18px, 5vw, 60px) 34px;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .view {
+        display: none;
+        flex: 1;
+      }
+      .view.active {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .hero {
+        margin-bottom: 32px;
+        animation: rise 0.5s ease both;
+      }
+      .eyebrow {
+        color: var(--green);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        font-weight: 700;
+        margin-bottom: 13px;
+      }
+      h1 {
+        font: 700 clamp(30px, 4.5vw, 48px)/1.05 "Space Grotesk";
+        letter-spacing: -0.065em;
+        margin: 0 0 12px;
+      }
+      .hero p {
+        max-width: 520px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0;
+      }
+      .thread {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 19px;
+        overflow: auto;
+        padding: 5px 2px 24px;
+      }
+      .empty {
+        margin: auto;
+        text-align: center;
+        color: var(--muted);
+        max-width: 340px;
+      }
+      .empty .spark {
+        display: inline-grid;
+        place-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        background: var(--mint);
+        color: var(--green);
+        font-size: 24px;
+        margin-bottom: 17px;
+      }
+      .empty .spark svg.icon {
+        width: 24px;
+        height: 24px;
+        stroke-width: 1.6;
+      }
+      .empty h2 {
+        color: var(--ink);
+        font: 600 23px "Space Grotesk";
+        margin: 0 0 7px;
+        letter-spacing: -0.04em;
+      }
+      .empty p {
+        line-height: 1.55;
+        margin: 0;
+      }
+      .message {
+        display: flex;
+        gap: 11px;
+        width: min(100%, 780px);
+        animation: rise 0.35s ease both;
+      }
+      .message.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+      .message .face {
+        flex: 0 0 29px;
+        width: 29px;
+        height: 29px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        background: var(--ink);
+        color: var(--mint);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .message .face svg.icon {
+        width: 15px;
+        height: 15px;
+        stroke-width: 1.7;
+      }
+      .message.user .face {
+        background: var(--orange);
+        color: var(--ink);
+      }
+      .bubble {
+        padding: 13px 16px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 4px 14px 14px 14px;
+        line-height: 1.65;
+        max-width: min(680px, calc(100vw - 340px));
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+      }
+      .message.user .bubble {
+        background: var(--ink);
+        color: #fff;
+        border: 0;
+        border-radius: 14px 4px 14px 14px;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 5px;
+      }
+      .assistant-content {
+        white-space: normal;
+      }
+      .assistant-content p,
+      .assistant-content ul,
+      .assistant-content ol,
+      .assistant-content h2,
+      .assistant-content h3,
+      .assistant-content pre {
+        margin: 0 0 12px;
+      }
+      .assistant-content > :last-child {
+        margin-bottom: 0;
+      }
+      .assistant-content h2,
+      .assistant-content h3 {
+        font: 700 15px/1.3 "Space Grotesk";
+        letter-spacing: -0.02em;
+      }
+      .assistant-content ul,
+      .assistant-content ol {
+        padding-left: 21px;
+      }
+      .assistant-content li + li {
+        margin-top: 5px;
+      }
+      .assistant-content code {
+        padding: 2px 5px;
+        border-radius: 5px;
+        background: #edf1eb;
+        font:
+          12px/1.4 "Cascadia Code",
+          Consolas,
+          monospace;
+      }
+      .assistant-content pre {
+        padding: 12px 14px;
+        overflow-x: auto;
+        border-radius: 9px;
+        background: #17201d;
+        color: #e5f5e9;
+        white-space: pre;
+      }
+      .assistant-content pre code {
+        padding: 0;
+        background: transparent;
+        color: inherit;
+      }
+      .assistant-content a {
+        color: var(--green);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .message.user .meta {
+        text-align: right;
+      }
+      .composer-wrap {
+        margin-top: auto;
+        padding-top: 12px;
+      }
+      .attachment {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+        margin: 0 0 8px;
+        font-size: 12px;
+      }
+      .attachment.show {
+        display: flex;
+      }
+      .composer {
+        background: #fff;
+        border: 1px solid #cbd6ca;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 12px 13px 11px;
+      }
+      textarea {
+        border: 0;
+        outline: 0;
+        resize: none;
+        width: 100%;
+        min-height: 54px;
+        max-height: 150px;
+        color: var(--ink);
+        background: transparent;
+        line-height: 1.55;
+      }
+      textarea::placeholder {
+        color: #a2aaa3;
+      }
+      .composer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 6px;
+      }
+      .tools {
+        display: flex;
+        gap: 6px;
+      }
+      .tool {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 5px 6px;
+        border-radius: 7px;
+        font-size: 13px;
+      }
+      .tool:hover {
+        background: var(--canvas);
+        color: var(--ink);
+      }
+      .send {
+        border: 0;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        background: var(--green);
+        color: #fff;
+        font-size: 17px;
+      }
+      .send:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .hint {
+        text-align: center;
+        color: #9aa39b;
+        font-size: 11px;
+        margin-top: 10px;
+      }
+      .panel-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 24px;
+      }
+      .panel-title h2 {
+        font: 600 29px "Space Grotesk";
+        margin: 0;
+        letter-spacing: -0.05em;
+      }
+      .panel-title p {
+        color: var(--muted);
+        margin: 7px 0 0;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 13px;
+        margin-bottom: 15px;
+      }
+      .stat,
+      .setting {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 18px;
+      }
+      .stat label {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .stat strong {
+        display: block;
+        font: 600 27px "Space Grotesk";
+        margin-top: 8px;
+      }
+      .recent {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 19px;
+      }
+      .recent h3 {
+        font: 600 16px "Space Grotesk";
+        margin: 0 0 14px;
+      }
+      .recent-row {
+        border-top: 1px solid var(--line);
+        padding: 12px 0;
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+      }
+      .recent-row b {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .settings {
+        display: grid;
+        gap: 12px;
+        max-width: 680px;
+      }
+      .setting {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .setting h3 {
+        font-size: 14px;
+        margin: 0 0 4px;
+      }
+      .setting p {
+        color: var(--muted);
+        font-size: 12px;
+        margin: 0;
+      }
+      select {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+        color: var(--ink);
+      }
+      .switch {
+        width: 40px;
+        height: 22px;
+        border: 0;
+        border-radius: 20px;
+        background: #cbd6ca;
+        padding: 3px;
+      }
+      .switch.on {
+        background: var(--green);
+      }
+      .switch i {
+        display: block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        transition: transform 0.2s;
+      }
+      .switch.on i {
+        transform: translateX(18px);
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @media (max-width: 720px) {
+        .app {
+          display: block;
+        }
+        .sidebar {
+          position: fixed;
+          z-index: 3;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          top: auto;
+          width: 100%;
+          height: 62px;
+          padding: 8px 12px;
+          border-right: 0;
+          border-top: 1px solid var(--line);
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-around;
+        }
+        .brand,
+        .new-chat,
+        .chat-history,
+        .sidebar-bottom {
+          display: none;
+        }
+        .nav {
+          display: flex;
+          width: 100%;
+          justify-content: space-around;
+        }
+        .nav button {
+          padding: 8px 14px;
+          flex-direction: column;
+          gap: 2px;
+          font-size: 10px;
+          text-align: center;
+        }
+        .nav-icon {
+          font-size: 16px;
+        }
+        .content {
+          margin-left: 0;
+          padding-bottom: 62px;
+          min-height: calc(100dvh - 62px);
+        }
+        .topbar {
+          height: 61px;
+        }
+        .online {
+          display: none;
+        }
+        .workspace {
+          height: calc(100dvh - 123px);
+          padding: 24px 14px 16px;
+        }
+        h1 {
+          font-size: clamp(30px, 9vw, 38px);
+        }
+        .hero {
+          margin-bottom: 18px;
+        }
+        .hero p {
+          font-size: 14px;
+        }
+        .bubble {
+          max-width: calc(100vw - 82px);
+          padding: 11px 13px;
+        }
+        .message {
+          width: 100%;
+        }
+        .composer-wrap {
+          padding-top: 8px;
+        }
+        .hint {
+          display: none;
+        }
+        .setting {
+          align-items: stretch;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .setting select,
+        .setting .switch {
+          align-self: flex-start;
+        }
+        .stats {
+          grid-template-columns: 1fr;
+        }
+        .stat {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M7 17 17 7M9 7h8v8" />
+            </svg>
+          </div>
+          <strong>ask now</strong>
+        </div>
+        <button class="new-chat" data-action="new">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          New chat
+        </button>
+        <nav class="nav" aria-label="Main navigation">
+          <button class="active" data-view="chat">
+            <span class="nav-icon"
+              ><svg class="icon" viewBox="0 0 24 24">
+                <path d="M5 6.5h14v10H9l-4 3v-13Z" /></svg></span
+            >Chat
+          </button>
+          <button data-view="dashboard">
+            <span class="nav-icon"
+              ><svg class="icon" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="6" height="6" rx="1" />
+                <rect x="14" y="4" width="6" height="6" rx="1" />
+                <rect x="4" y="14" width="6" height="6" rx="1" />
+                <rect x="14" y="14" width="6" height="6" rx="1" /></svg></span
+            >Dashboard
+          </button>
+          <button data-view="settings">
+            <span class="nav-icon"
+              ><svg class="icon" viewBox="0 0 24 24">
+                <path
+                  d="m9.6 4.8.6-1.3h3.6l.6 1.3 1.5.9 1.4-.3 1.8 3.1-1 1.1v1.8l1 1.1-1.8 3.1-1.4-.3-1.5.9-.6 1.3h-3.6l-.6-1.3-1.5-.9-1.4.3-1.8-3.1 1-1.1v-1.8l-1-1.1 1.8-3.1 1.4.3 1.5-.9Z"
+                />
+                <circle cx="12" cy="11.5" r="2.7" /></svg></span
+            >Settings
+          </button>
+        </nav>
+        <section class="chat-history" aria-label="Previous chats">
+          <div class="chat-history-heading">Recent chats</div>
+          <div class="chat-list" id="chatList"></div>
+        </section>
+        <div class="sidebar-bottom">
+          <div class="profile">
+            <div class="avatar">S</div>
+            <div><b>Workspace</b><small>Free plan</small></div>
+          </div>
+        </div>
+      </aside>
+      <main class="content">
+        <header class="topbar">
+          <div class="crumb"><b id="crumb">Chat</b> <span>/ Ask Now</span></div>
+          <div class="top-actions">
+            <button
+              class="icon-btn"
+              id="exportPdf"
+              title="Print or save as PDF"
+            >
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M12 4v11M8 11l4 4 4-4M5 20h14" />
+              </svg></button
+            ><button class="icon-btn" id="clear" title="Clear chat">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path
+                  d="M5 7h14M10 11v5M14 11v5M8 7l1-3h6l1 3m-9 0 1 13h10l1-13"
+                />
+              </svg></button
+            ><span class="online"><i></i> Ready</span>
+          </div>
+        </header>
+        <section class="workspace">
+          <div class="view active" id="chatView">
+            <div class="hero">
+              <div class="eyebrow">Your chats, in one place</div>
+              <h1>What will you ask now?</h1>
+              <p>
+                A calm, capable AI workspace for turning rough ideas into clear
+                next steps.
+              </p>
+            </div>
+            <div class="thread" id="thread">
+              <div class="empty" id="empty">
+                <div class="spark">
+                  <svg class="icon" viewBox="0 0 24 24">
+                    <path
+                      d="m12 3 1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8L12 3Z"
+                    />
+                  </svg>
+                </div>
+                <h2>Start anywhere</h2>
+                <p>
+                  Ask a question, drop in a PDF, or share an image for a second
+                  pair of eyes.
+                </p>
+              </div>
+            </div>
+            <div class="composer-wrap">
+              <div class="attachment" id="attachment">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path
+                    d="m8.5 12.5 6.7-6.7a3 3 0 0 1 4.2 4.2l-8.6 8.6a5 5 0 0 1-7-7l8.2-8.2"
+                  /></svg
+                ><span id="fileName"></span
+                ><button class="tool" id="removeFile">Remove</button>
+              </div>
+              <form class="composer" id="form">
+                <textarea
+                  id="input"
+                  rows="2"
+                  placeholder="Ask anything..."
+                ></textarea>
+                <div class="composer-bar">
+                  <div class="tools">
+                    <button type="button" class="tool" id="attach">
+                      <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" /></svg
+                      >Attach</button
+                    ><input
+                      id="file"
+                      type="file"
+                      hidden
+                      accept="image/*,.pdf,.txt,.md,.csv"
+                    /><button type="button" class="tool" id="voice">
+                      <svg class="icon" viewBox="0 0 24 24">
+                        <rect x="8" y="3" width="8" height="12" rx="4" />
+                        <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6" /></svg
+                      >Voice
+                    </button>
+                  </div>
+                  <button class="send" id="send" title="Send" disabled>
+                    <svg class="icon" viewBox="0 0 24 24">
+                      <path d="M12 19V5M6 11l6-6 6 6" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+              <div class="hint">
+                Enter to send · Shift + Enter for a new line
+              </div>
+            </div>
+          </div>
+          <div class="view" id="dashboardView">
+            <div class="panel-title">
+              <div>
+                <div class="eyebrow">Workspace pulse</div>
+                <h2>Dashboard</h2>
+                <p>A small, useful view of your Ask Now workspace.</p>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat">
+                <label>Messages this session</label
+                ><strong id="messageStat">0</strong>
+              </div>
+              <div class="stat">
+                <label>Files reviewed</label><strong id="fileStat">0</strong>
+              </div>
+              <div class="stat">
+                <label>Workspace status</label
+                ><strong style="color: var(--green); font-size: 19px"
+                  >Ready</strong
+                >
+              </div>
+            </div>
+            <div class="recent">
+              <h3>Recent prompts</h3>
+              <div id="recentList">
+                <div class="recent-row">
+                  <b>No prompts yet</b><span>Start a chat to see it here</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="view" id="settingsView">
+            <div class="panel-title">
+              <div>
+                <div class="eyebrow">Personalize your flow</div>
+                <h2>Settings</h2>
+                <p>Your preferences are stored locally in this browser.</p>
+              </div>
+            </div>
+            <div class="settings">
+              <div class="setting">
+                <div>
+                  <h3>Model</h3>
+                  <p id="modelStatus">
+                    Checking models available to your API key...
+                  </p>
+                </div>
+                <select id="model" disabled>
+                  <option>Loading available models...</option>
+                </select>
+              </div>
+              <div class="setting">
+                <div>
+                  <h3>Read responses aloud</h3>
+                  <p>Use your browser's built-in voice.</p>
+                </div>
+                <button class="switch" id="speech"><i></i></button>
+              </div>
+              <div class="setting">
+                <div>
+                  <h3>Local history</h3>
+                  <p>Keep this session available after refresh.</p>
+                </div>
+                <button class="switch on" id="history"><i></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const thread = $("#thread"),
+        input = $("#input"),
+        send = $("#send"),
+        fileInput = $("#file");
+      const storedConversations = JSON.parse(
+        localStorage.getItem("ask-now-conversations") || "[]",
+      );
+      const legacyHistory = JSON.parse(
+        localStorage.getItem("ask-now-history") || "[]",
+      );
+      let conversations = Array.isArray(storedConversations)
+          ? storedConversations
+          : [],
+        activeConversationId =
+          localStorage.getItem("ask-now-active-chat") || "",
+        history = [],
+        file = null,
+        speech = localStorage.getItem("ask-now-speech") === "true",
+        historyOn = true;
+      if (!conversations.length && legacyHistory.length) {
+        conversations = [
+          {
+            id: String(Date.now()),
+            title:
+              legacyHistory
+                .find((message) => message.role === "user")
+                ?.content?.slice(0, 60) || "Previous chat",
+            messages: legacyHistory,
+            updatedAt: Date.now(),
+          },
+        ];
+      }
+      if (!activeConversationId && conversations.length)
+        activeConversationId = conversations[0].id;
+      const activeConversation = () =>
+        conversations.find(
+          (conversation) => conversation.id === activeConversationId,
+        );
+      history = activeConversation()?.messages || [];
+      const loadModels = async () => {
+        const select = $("#model");
+        const status = $("#modelStatus");
+        try {
+          const response = await fetch("/models");
+          const data = await response.json();
+          if (!response.ok || !data.models?.length)
+            throw new Error(data.error || "No accessible chat models found.");
+          const saved = localStorage.getItem("ask-now-model");
+          select.innerHTML = data.models
+            .map(
+              (model) =>
+                `<option value="${escapeHtml(model.id)}">${escapeHtml(model.id)}${model.supports_images ? " · Vision" : ""}${model.context_window ? ` · ${Number(model.context_window).toLocaleString()} context` : ""}</option>`,
+            )
+            .join("");
+          select.disabled = false;
+          select.value = data.models.some((model) => model.id === saved)
+            ? saved
+            : data.models[0].id;
+          localStorage.setItem("ask-now-model", select.value);
+          status.textContent = `${data.models.length} model${data.models.length === 1 ? "" : "s"} available for this API key.`;
+        } catch (error) {
+          select.innerHTML = `<option value="">Unavailable</option>`;
+          status.textContent = error.message;
+        }
+      };
+      const escapeHtml = (s) =>
+        s.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const saveConversations = () => {
+        if (!historyOn) return;
+        const current = activeConversation();
+        if (current) {
+          current.messages = history;
+          current.title =
+            history
+              .find((message) => message.role === "user")
+              ?.content?.slice(0, 60) || "New chat";
+          current.updatedAt = Date.now();
+        }
+        localStorage.setItem(
+          "ask-now-conversations",
+          JSON.stringify(conversations),
+        );
+        localStorage.setItem("ask-now-active-chat", activeConversationId);
+        localStorage.removeItem("ask-now-history");
+      };
+      const renderChatList = () => {
+        const list = $("#chatList");
+        list.innerHTML = conversations
+          .slice()
+          .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+          .map(
+            (conversation) =>
+              `<button class="chat-item ${conversation.id === activeConversationId ? "active" : ""}" data-chat-id="${escapeHtml(conversation.id)}" title="${escapeHtml(conversation.title || "New chat")}">${escapeHtml(conversation.title || "New chat")}</button>`,
+          )
+          .join("");
+        list.querySelectorAll("[data-chat-id]").forEach(
+          (button) =>
+            (button.onclick = () => {
+              activeConversationId = button.dataset.chatId;
+              history = activeConversation()?.messages || [];
+              localStorage.setItem("ask-now-active-chat", activeConversationId);
+              renderChatList();
+              render();
+              setView("chat");
+            }),
+        );
+      };
+      const startNewChat = () => {
+        const conversation = {
+          id: String(Date.now()),
+          title: "New chat",
+          messages: [],
+          updatedAt: Date.now(),
+        };
+        conversations.unshift(conversation);
+        activeConversationId = conversation.id;
+        history = [];
+        saveConversations();
+        renderChatList();
+        render();
+      };
+      const inlineMarkdown = (text) =>
+        text
+          .replace(/`([^`]+)`/g, "<code>$1</code>")
+          .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+          .replace(
+            /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+            '<a href="$2" target="_blank" rel="noreferrer">$1</a>',
+          );
+      const formatAssistant = (text) => {
+        const lines = escapeHtml(text).replace(/\r/g, "").split("\n");
+        let html = "";
+        let code = [];
+        let inCode = false;
+        let inList = false;
+        const closeList = () => {
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+        };
+        lines.forEach((line) => {
+          if (line.trim().startsWith("```")) {
+            if (inCode) {
+              html += `<pre><code>${code.join("\n")}</code></pre>`;
+              code = [];
+              inCode = false;
+            } else {
+              closeList();
+              inCode = true;
+            }
+            return;
+          }
+          if (inCode) {
+            code.push(line);
+            return;
+          }
+          if (!line.trim()) {
+            closeList();
+            return;
+          }
+          const heading = line.match(/^(#{1,3})\s+(.+)/);
+          const bullet = line.match(/^[-*]\s+(.+)/);
+          if (heading) {
+            closeList();
+            const headingLevel = heading[1].length === 1 ? "2" : "3";
+            html += `<h${headingLevel}>${inlineMarkdown(heading[2])}</h${headingLevel}>`;
+          } else if (bullet) {
+            if (!inList) {
+              html += "<ul>";
+              inList = true;
+            }
+            html += `<li>${inlineMarkdown(bullet[1])}</li>`;
+          } else {
+            closeList();
+            html += `<p>${inlineMarkdown(line)}</p>`;
+          }
+        });
+        closeList();
+        if (inCode) html += `<pre><code>${code.join("\n")}</code></pre>`;
+        return html || "<p></p>";
+      };
+      const render = () => {
+        if (!history.length) {
+          thread.innerHTML = `<div class="empty" id="empty"><div class="spark"><svg class="icon" viewBox="0 0 24 24"><path d="m12 3 1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8L12 3Z" /></svg></div><h2>Start anywhere</h2><p>Ask a question, drop in a PDF, or share an image for a second pair of eyes.</p></div>`;
+          updateStats();
+          return;
+        }
+        thread.innerHTML = "";
+        history.forEach((m) => {
+          const el = document.createElement("div");
+          el.className = "message " + m.role;
+          const content =
+            m.role === "user"
+              ? escapeHtml(m.content).replace(/\n/g, "<br>")
+              : formatAssistant(m.content);
+          el.innerHTML =
+            '<div class="face">' +
+            (m.role === "user"
+              ? '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg>'
+              : '<svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>') +
+            '</div><div><div class="bubble">' +
+            (m.role === "assistant"
+              ? '<div class="assistant-content">' + content + "</div>"
+              : content) +
+            '</div><div class="meta">' +
+            (m.role === "user" ? "You" : "Ask Now") +
+            "</div></div>";
+          thread.appendChild(el);
+        });
+        thread.scrollTop = thread.scrollHeight;
+        updateStats();
+      };
+      const updateStats = () => {
+        $("#messageStat").textContent = history.filter(
+          (m) => m.role === "user",
+        ).length;
+        $("#fileStat").textContent = Number(
+          localStorage.getItem("ask-now-files") || 0,
+        );
+        const list = $("#recentList");
+        const prompts = history
+          .filter((m) => m.role === "user")
+          .slice(-5)
+          .reverse();
+        list.innerHTML = prompts.length
+          ? prompts
+              .map(
+                (m) =>
+                  '<div class="recent-row"><b>' +
+                  escapeHtml(m.content.slice(0, 60)) +
+                  "</b><span>Prompt</span></div>",
+              )
+              .join("")
+          : '<div class="recent-row"><b>No prompts yet</b><span>Start a chat to see it here</span></div>';
+      };
+      const setView = (name) => {
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => v.classList.remove("active"));
+        $("#" + name + "View").classList.add("active");
+        document
+          .querySelectorAll(".nav button")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.view === name),
+          );
+        $("#crumb").textContent = name[0].toUpperCase() + name.slice(1);
+        updateStats();
+      };
+      document
+        .querySelectorAll("[data-view]")
+        .forEach((b) => (b.onclick = () => setView(b.dataset.view)));
+      $('[data-action="new"]').onclick = () => {
+        startNewChat();
+        setView("chat");
+        input.focus();
+      };
+      $("#clear").onclick = () => {
+        history = [];
+        saveConversations();
+        render();
+      };
+      $("#attach").onclick = () => fileInput.click();
+      fileInput.onchange = () => {
+        file = fileInput.files[0];
+        if (file) {
+          $("#fileName").textContent = file.name;
+          $("#attachment").classList.add("show");
+        }
+      };
+      $("#removeFile").onclick = () => {
+        file = null;
+        fileInput.value = "";
+        $("#attachment").classList.remove("show");
+      };
+      input.oninput = () => {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 150) + "px";
+        send.disabled = !input.value.trim();
+      };
+      input.onkeydown = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          $("#form").requestSubmit();
+        }
+      };
+      $("#form").onsubmit = async (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        if (!activeConversation()) startNewChat();
+        const currentFile = file;
+        history.push({ role: "user", content: text });
+        render();
+        input.value = "";
+        input.style.height = "auto";
+        send.disabled = true;
+        const loading = { role: "assistant", content: "Thinking…" };
+        history.push(loading);
+        render();
+        try {
+          const body = new FormData();
+          body.append(
+            "payload",
+            JSON.stringify({
+              history: history.slice(0, -1),
+              model: $("#model").value,
+            }),
+          );
+          if (currentFile) body.append("file", currentFile);
+          const res = await fetch("/chat", { method: "POST", body });
+          const data = await res.json();
+          history.pop();
+          history.push({
+            role: "assistant",
+            content: data.reply || data.error || "Something went wrong.",
+          });
+          if (currentFile)
+            localStorage.setItem(
+              "ask-now-files",
+              Number(localStorage.getItem("ask-now-files") || 0) + 1,
+            );
+          saveConversations();
+          renderChatList();
+          render();
+          if (speech && data.reply && "speechSynthesis" in window)
+            speechSynthesis.speak(new SpeechSynthesisUtterance(data.reply));
+        } catch (err) {
+          history.pop();
+          history.push({
+            role: "assistant",
+            content:
+              "I could not reach the workspace. Check the deployment and try again.",
+          });
+          render();
+        }
+        file = null;
+        fileInput.value = "";
+        $("#attachment").classList.remove("show");
+      };
+      $("#voice").onclick = () => {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) return alert("Voice input is not supported in this browser.");
+        const r = new SR();
+        r.lang = "en-US";
+        r.onresult = (e) => {
+          input.value = e.results[0][0].transcript;
+          input.dispatchEvent(new Event("input"));
+        };
+        r.start();
+      };
+      $("#exportPdf").onclick = () => window.print();
+      $("#speech").onclick = () => {
+        speech = !speech;
+        $("#speech").classList.toggle("on", speech);
+        localStorage.setItem("ask-now-speech", speech);
+      };
+      $("#history").onclick = () => {
+        historyOn = !historyOn;
+        $("#history").classList.toggle("on", historyOn);
+        if (!historyOn) {
+          localStorage.removeItem("ask-now-history");
+          localStorage.removeItem("ask-now-conversations");
+          conversations = [];
+          activeConversationId = "";
+          history = [];
+          renderChatList();
+          render();
+        } else {
+          saveConversations();
+        }
+      };
+      $("#model").onchange = (e) =>
+        localStorage.setItem("ask-now-model", e.target.value);
+      $("#speech").classList.toggle("on", speech);
+      loadModels();
+      renderChatList();
+      render();
+    </script>
+  </body>
+</html>
