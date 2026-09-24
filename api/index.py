@@ -2,6 +2,7 @@ import base64
 import io
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -10,7 +11,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__, static_folder="../public", static_url_path="")
+PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
+
+app = Flask(__name__, static_folder=str(PUBLIC_DIR), static_url_path="")
 app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
 
 SYSTEM_PROMPT = """You are Ask Now, a clear, capable general-purpose AI assistant.
@@ -88,7 +91,7 @@ def _available_models(api_key: str) -> list[dict[str, Any]]:
 
 @app.get("/")
 def index() -> Any:
-    return send_from_directory(app.static_folder, "index.html")
+    return send_from_directory(PUBLIC_DIR, "index.html")
 
 
 @app.get("/models")
